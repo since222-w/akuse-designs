@@ -8,7 +8,6 @@
   <style>
     :root{
       --bg0:#07080c;
-      --bg1:#0b0c12;
       --bg2:#10131b;
 
       /* приглушённый красный */
@@ -21,6 +20,9 @@
 
       --stroke: rgba(255,255,255,.08);
       --card: rgba(255,255,255,.04);
+
+      --shadow: 0 30px 80px rgba(0,0,0,.55);
+      --radius: 22px;
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
@@ -129,11 +131,11 @@
     /* HERO */
     .hero{
       position:relative;
-      border-radius:22px;
+      border-radius:var(--radius);
       overflow:hidden;
       border:1px solid rgba(255,255,255,.06);
       background: linear-gradient(120deg, rgba(0,0,0,.78), rgba(0,0,0,.26));
-      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+      box-shadow: var(--shadow);
       padding:64px 56px;
       min-height: 520px;
       isolation:isolate;
@@ -176,9 +178,6 @@
       color:rgba(255,255,255,.72);
       text-transform:uppercase;
       margin-bottom:14px;
-      opacity:0;
-      transform: translateY(10px);
-      animation: enter .9s ease forwards .12s;
     }
 
     h1{
@@ -191,10 +190,6 @@
       position:relative;
       display:inline-block;
       overflow:hidden;
-
-      opacity:0;
-      transform: translateY(12px);
-      animation: enter 1s ease forwards .22s;
     }
 
     /* минимал-перелив 2 секунды */
@@ -215,9 +210,6 @@
       line-height:1.65;
       font-size:15px;
       max-width:560px;
-      opacity:0;
-      transform: translateY(12px);
-      animation: enter 1s ease forwards .38s;
     }
 
     .row{
@@ -226,10 +218,6 @@
       align-items:center;
       gap:12px;
       flex-wrap:wrap;
-
-      opacity:0;
-      transform: translateY(12px);
-      animation: enter 1s ease forwards .52s;
     }
 
     .btn{
@@ -265,7 +253,7 @@
       text-transform:lowercase;
     }
 
-    /* мини-блоки под героем */
+    /* services */
     .grid{
       margin-top:14px;
       display:grid;
@@ -278,6 +266,7 @@
       border-radius:18px;
       padding:18px 18px 16px;
       min-height:120px;
+      backdrop-filter: blur(6px);
     }
     .card b{
       letter-spacing:1.6px;
@@ -295,13 +284,25 @@
     .portfolio{
       margin-top:70px;
     }
-
     .portfolioTitle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:22px;
+    }
+    .portfolioTitle h2{
       text-transform:uppercase;
       letter-spacing:3px;
       font-size:14px;
-      margin-bottom:24px;
-      color:rgba(255,255,255,.7);
+      color:rgba(255,255,255,.74);
+      font-weight:700;
+    }
+    .hint{
+      font-size:12px;
+      color:rgba(255,255,255,.45);
+      letter-spacing:1px;
+      white-space:nowrap;
     }
 
     .portfolioGrid{
@@ -318,26 +319,39 @@
       background:#000;
       cursor:pointer;
       transform: translateZ(0);
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
     }
 
     .work img{
       width:100%;
       display:block;
-      transition:.6s ease;
+      transition: transform .9s ease, filter .5s ease;
+      filter: saturate(.95) contrast(1.05) brightness(.98);
     }
 
     .work:hover img{
       transform:scale(1.06);
+      filter: saturate(1.05) contrast(1.08) brightness(1.02);
+    }
+
+    .work::after{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(650px 360px at 70% 20%, rgba(196,26,56,.18), transparent 55%),
+        linear-gradient(to top, rgba(0,0,0,.92), transparent 60%);
+      opacity:.95;
+      pointer-events:none;
     }
 
     .overlay{
       position:absolute;
       inset:0;
-      background:linear-gradient(to top,rgba(0,0,0,.90), transparent 58%);
       display:flex;
       flex-direction:column;
       justify-content:flex-end;
       padding:18px;
+      z-index:2;
     }
 
     .overlay span{
@@ -353,7 +367,29 @@
       letter-spacing:.3px;
     }
 
-    /* CONTACT */
+    .openBadge{
+      position:absolute;
+      top:14px; left:14px;
+      z-index:2;
+      font-size:11px;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      padding:8px 10px;
+      border-radius:999px;
+      backdrop-filter: blur(6px);
+      transform: translateY(-2px);
+      opacity:0;
+      transition: .25s ease;
+    }
+    .work:hover .openBadge{
+      opacity:1;
+      transform: translateY(0);
+    }
+
+    /* FOOTER */
     .footer{
       margin-top:26px;
       display:flex;
@@ -393,9 +429,187 @@
       border-bottom-color: rgba(255,255,255,.35);
     }
 
+    /* REVEAL ANIMATIONS (minimal) */
+    .reveal{
+      opacity:0;
+      transform: translateY(14px);
+      filter: blur(4px);
+      transition: opacity .8s ease, transform .8s ease, filter .8s ease;
+    }
+    .reveal.in{
+      opacity:1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+    .stagger > *{
+      opacity:0;
+      transform: translateY(14px);
+      filter: blur(4px);
+      transition: opacity .8s ease, transform .8s ease, filter .8s ease;
+    }
+    .stagger.in > *{
+      opacity:1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+    .stagger.in > *:nth-child(1){ transition-delay: .00s; }
+    .stagger.in > *:nth-child(2){ transition-delay: .08s; }
+    .stagger.in > *:nth-child(3){ transition-delay: .16s; }
+    .stagger.in > *:nth-child(4){ transition-delay: .24s; }
+    .stagger.in > *:nth-child(5){ transition-delay: .32s; }
+    .stagger.in > *:nth-child(6){ transition-delay: .40s; }
+
+    /* MODAL VIEWER */
+    .viewer{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      display:none;
+      place-items:center;
+      padding:22px;
+      background: rgba(0,0,0,.70);
+      backdrop-filter: blur(10px);
+    }
+    .viewer.open{ display:grid; }
+
+    .viewerPanel{
+      width:min(1100px, 96vw);
+      height:min(720px, 86vh);
+      border-radius: 22px;
+      border:1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(10,10,14,.85), rgba(10,10,14,.55));
+      box-shadow: 0 40px 110px rgba(0,0,0,.75);
+      overflow:hidden;
+      position:relative;
+      transform: translateY(10px) scale(.985);
+      opacity:0;
+      transition: .28s ease;
+    }
+    .viewer.open .viewerPanel{
+      transform: translateY(0) scale(1);
+      opacity:1;
+    }
+
+    .viewerTop{
+      position:absolute;
+      left:0; right:0; top:0;
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 14px 0 14px;
+      z-index:2;
+      background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,0));
+      pointer-events:none;
+    }
+    .viewerTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      pointer-events:auto;
+      max-width: 70%;
+    }
+    .tag{
+      font-size:11px;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      color:var(--red);
+      border:1px solid rgba(196,26,56,.35);
+      background: rgba(196,26,56,.06);
+      padding:7px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+    .ttl{
+      font-size:12px;
+      letter-spacing:1px;
+      color:rgba(255,255,255,.78);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .viewerBtns{
+      display:flex;
+      gap:10px;
+      pointer-events:auto;
+    }
+    .iconBtn{
+      width:38px;height:38px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color:rgba(255,255,255,.88);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      transition:.2s ease;
+      user-select:none;
+    }
+    .iconBtn:hover{
+      background: rgba(255,255,255,.08);
+      transform: translateY(-1px);
+    }
+
+    .viewerBody{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      padding:56px 16px 16px;
+    }
+
+    .viewerImg{
+      max-width:100%;
+      max-height:100%;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: 0 25px 80px rgba(0,0,0,.55);
+      background:#000;
+    }
+
+    .navArrow{
+      position:absolute;
+      top:50%;
+      transform: translateY(-50%);
+      width:48px;height:48px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      transition:.2s ease;
+      user-select:none;
+      z-index:3;
+    }
+    .navArrow:hover{
+      background: rgba(255,255,255,.08);
+      transform: translateY(-50%) scale(1.02);
+    }
+    .navArrow.prev{ left:14px; }
+    .navArrow.next{ right:14px; }
+
+    .kbdHint{
+      position:absolute;
+      left:14px;
+      bottom:14px;
+      z-index:3;
+      font-size:11px;
+      color:rgba(255,255,255,.50);
+      letter-spacing:1px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      padding:9px 10px;
+      border-radius:999px;
+      backdrop-filter: blur(6px);
+    }
+
     /* animation */
-    @keyframes enter{ to{ opacity:1; transform: translateY(0); } }
-    @keyframes mist{ from{ transform: translateX(-8px) translateY(3px); opacity:.70; } to{ transform: translateX(10px) translateY(-3px); opacity:.88; } }
+    @keyframes mist{
+      from{ transform: translateX(-8px) translateY(3px); opacity:.70; }
+      to  { transform: translateX(10px) translateY(-3px); opacity:.88; }
+    }
     @keyframes shine{ 0%{ left:-100%; } 100%{ left:150%; } }
 
     /* adaptive */
@@ -403,23 +617,30 @@
       .grid{ grid-template-columns:1fr; }
       h1{ font-size:58px; }
       .hero{ padding:54px 30px; }
+      .hint{ display:none; }
+      .viewerPanel{ height:min(720px, 88vh); }
     }
     @media (max-width: 560px){
       .top{ align-items:flex-start; }
       .nav .cta{ width:100%; text-align:center; }
       .hero{ min-height: 520px; }
+      .navArrow{ display:none; }
+      .kbdHint{ display:none; }
+      .viewerTitle{ max-width: 62%; }
     }
 
     @media (prefers-reduced-motion: reduce){
       *{ animation:none !important; transition:none !important; }
       h1::after{ display:none !important; }
+      .reveal, .stagger > *{ opacity:1 !important; transform:none !important; filter:none !important; }
+      .viewerPanel{ opacity:1 !important; transform:none !important; }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="top">
+    <div class="top reveal" data-reveal>
       <div class="logo">
         <div class="mark">AD</div>
         <div class="brandText">
@@ -432,11 +653,11 @@
         <a href="#services">services</a>
         <a href="#portfolio">portfolio</a>
         <a href="#contact">contact</a>
-        <a class="cta" href="https://t.me/sinceik" target="_blank">write to me</a>
+        <a class="cta" href="https://t.me/sinceik" target="_blank" rel="noopener">write to me</a>
       </div>
     </div>
 
-    <section class="hero">
+    <section class="hero reveal" data-reveal>
       <div class="heroInner">
         <div class="kicker">acuse design</div>
         <h1>armık</h1>
@@ -446,13 +667,13 @@
         </div>
 
         <div class="row">
-          <a class="btn" href="https://t.me/sinceik" target="_blank">contact →</a>
+          <a class="btn" href="https://t.me/sinceik" target="_blank" rel="noopener">contact →</a>
           <div class="pill">minimal • clean • sharp</div>
         </div>
       </div>
     </section>
 
-    <div class="grid" id="services">
+    <div class="grid stagger" id="services" data-reveal>
       <div class="card">
         <b>branding</b>
         <p>Логотипы, айдентика, обложки. Визуал, который держит стиль.</p>
@@ -468,27 +689,45 @@
     </div>
 
     <section class="portfolio" id="portfolio">
-      <div class="portfolioTitle">portfolio</div>
+      <div class="portfolioTitle reveal" data-reveal>
+        <h2>portfolio</h2>
+        <div class="hint">click to open • esc to close • ← → to navigate</div>
+      </div>
 
-      <div class="portfolioGrid">
-        <div class="work">
-          <img src="work1.jpg" alt="Work 1" />
+      <div class="portfolioGrid stagger" data-reveal>
+        <div class="work"
+             role="button" tabindex="0"
+             data-src="work1.jpg"
+             data-tag="cover"
+             data-title="Dota 2 Esports">
+          <div class="openBadge">open</div>
+          <img src="work1.jpg" alt="Dota 2 Esports" loading="lazy" />
           <div class="overlay">
             <span>cover</span>
             <h3>Dota 2 Esports</h3>
           </div>
         </div>
 
-        <div class="work">
-          <img src="work2.jpg" alt="Work 2" />
+        <div class="work"
+             role="button" tabindex="0"
+             data-src="work2.jpg"
+             data-tag="banner"
+             data-title="Bear ROI Visual">
+          <div class="openBadge">open</div>
+          <img src="work2.jpg" alt="Bear ROI Visual" loading="lazy" />
           <div class="overlay">
             <span>banner</span>
             <h3>Bear ROI Visual</h3>
           </div>
         </div>
 
-        <div class="work">
-          <img src="work3.jpg" alt="Work 3" />
+        <div class="work"
+             role="button" tabindex="0"
+             data-src="work3.jpg"
+             data-tag="logo"
+             data-title="Avatar Collection">
+          <div class="openBadge">open</div>
+          <img src="work3.jpg" alt="Avatar Collection" loading="lazy" />
           <div class="overlay">
             <span>logo</span>
             <h3>Avatar Collection</h3>
@@ -497,13 +736,144 @@
       </div>
     </section>
 
-    <div class="footer" id="contact">
+    <div class="footer reveal" id="contact" data-reveal>
       <div>© 2026 Acuse Design</div>
       <div class="contact">
         <span>contact</span>
-        <a href="https://t.me/sinceik" target="_blank">@sinceik</a>
+        <a href="https://t.me/sinceik" target="_blank" rel="noopener">@sinceik</a>
       </div>
     </div>
   </div>
+
+  <!-- VIEWER MODAL -->
+  <div class="viewer" id="viewer" aria-hidden="true">
+    <div class="viewerPanel" role="dialog" aria-modal="true" aria-label="Portfolio viewer">
+      <div class="viewerTop">
+        <div class="viewerTitle">
+          <div class="tag" id="vTag">work</div>
+          <div class="ttl" id="vTitle">Preview</div>
+        </div>
+        <div class="viewerBtns">
+          <button class="iconBtn" id="vDownload" title="Open image" aria-label="Open image">↗</button>
+          <button class="iconBtn" id="vClose" title="Close" aria-label="Close">✕</button>
+        </div>
+      </div>
+
+      <button class="navArrow prev" id="vPrev" aria-label="Previous">←</button>
+      <button class="navArrow next" id="vNext" aria-label="Next">→</button>
+
+      <div class="viewerBody" id="viewerBody">
+        <img class="viewerImg" id="vImg" alt="Preview" />
+      </div>
+
+      <div class="kbdHint">Esc — close • ← → — next/prev</div>
+    </div>
+  </div>
+
+  <script>
+    // Reveal on scroll (minimal)
+    (function(){
+      const items = Array.from(document.querySelectorAll('[data-reveal]'));
+      if (!('IntersectionObserver' in window)) {
+        items.forEach(el => el.classList.add('in'));
+        return;
+      }
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.18 });
+
+      items.forEach(el => io.observe(el));
+    })();
+
+    // Portfolio viewer (modal)
+    (function(){
+      const viewer = document.getElementById('viewer');
+      const vImg = document.getElementById('vImg');
+      const vTag = document.getElementById('vTag');
+      const vTitle = document.getElementById('vTitle');
+      const vClose = document.getElementById('vClose');
+      const vPrev = document.getElementById('vPrev');
+      const vNext = document.getElementById('vNext');
+      const vDownload = document.getElementById('vDownload');
+      const viewerBody = document.getElementById('viewerBody');
+
+      const works = Array.from(document.querySelectorAll('.work'));
+      let idx = 0;
+
+      function lockScroll(lock){
+        document.documentElement.style.overflow = lock ? 'hidden' : '';
+        document.body.style.overflow = lock ? 'hidden' : '';
+      }
+
+      function openAt(i){
+        idx = (i + works.length) % works.length;
+        const el = works[idx];
+        const src = el.getAttribute('data-src');
+        const tag = el.getAttribute('data-tag') || 'work';
+        const title = el.getAttribute('data-title') || 'Preview';
+
+        vImg.src = src;
+        vTag.textContent = tag;
+        vTitle.textContent = title;
+
+        vDownload.onclick = () => window.open(src, '_blank', 'noopener');
+
+        viewer.classList.add('open');
+        viewer.setAttribute('aria-hidden', 'false');
+        lockScroll(true);
+      }
+
+      function close(){
+        viewer.classList.remove('open');
+        viewer.setAttribute('aria-hidden', 'true');
+        lockScroll(false);
+        // small cleanup
+        setTimeout(() => { vImg.src = ''; }, 150);
+      }
+
+      function prev(){ openAt(idx - 1); }
+      function next(){ openAt(idx + 1); }
+
+      // Click/keyboard on cards
+      works.forEach((el, i) => {
+        el.addEventListener('click', () => openAt(i));
+        el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openAt(i);
+          }
+        });
+      });
+
+      // Controls
+      vClose.addEventListener('click', close);
+      vPrev.addEventListener('click', prev);
+      vNext.addEventListener('click', next);
+
+      // Close when clicking outside panel (overlay)
+      viewer.addEventListener('click', (e) => {
+        if (e.target === viewer) close();
+      });
+
+      // Prevent closing on panel click
+      viewerBody.addEventListener('click', (e) => e.stopPropagation());
+      document.querySelector('.viewerPanel').addEventListener('click', (e) => e.stopPropagation());
+
+      // Keyboard
+      window.addEventListener('keydown', (e) => {
+        if (!viewer.classList.contains('open')) return;
+
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowLeft') prev();
+        if (e.key === 'ArrowRight') next();
+      });
+    })();
+  </script>
 </body>
 </html>
